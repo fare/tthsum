@@ -1,0 +1,10 @@
+;;-*- Lisp -*-
+(module
+ (:fullname "tthsum"
+  :build-depends-on
+  ((:build "/command-line-arguments")
+   (:asdf "ironclad") (:asdf "binascii"))
+  :depends-on ("main"))
+ (:executable "tthsum"
+  :depends-on :build
+  :entry-point "tthsum::main"))
