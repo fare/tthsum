@@ -1,0 +1,13 @@
+;-*- Lisp -*-
+#+xcvb
+(module
+ (:fullname "/tthsum"
+  :supersedes-asdf ("tthsum")
+  :build-depends-on
+  ((:asdf "ironclad")
+   (:asdf "binascii")
+   "/command-line-arguments")
+  :depends-on ("main"))
+ (:executable "tthsum"
+  :depends-on :build
+  :entry-point "tthsum::main"))
