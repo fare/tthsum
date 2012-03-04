@@ -18,9 +18,12 @@
     (("help" #\h) :type boolean :optional t :documentation "display help")
     (("version" #\V) :type boolean :optional t :documentation "display version")))
 
-(defun main ()
+(defun main* ()
+  (apply 'main (command-line-arguments:get-command-line-arguments)))
+
+(defun main (&rest arguments)
   (with-coded-exit ()
-    (interpret-command-line (command-line-arguments:get-command-line-arguments))))
+    (interpret-command-line arguments)))
 
 (defun interpret-command-line (args)
   (handle-command-line +tthsum-option-spec+ 'tthsum
