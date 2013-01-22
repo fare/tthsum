@@ -3,12 +3,12 @@
 (in-package :cl-user)
 
 (defpackage :tthsum
-  (:use :ironclad :cl :command-line-arguments :binascii :xcvb-driver)
+  (:use :ironclad :cl :command-line-arguments :binascii :asdf-driver)
   (:shadowing-import-from :ironclad #:null))
 
 (in-package :tthsum)
 
-(defparameter *version* 1)
+(defparameter *version* 1.1)
 
 (defparameter +tthsum-option-spec+
   '(((#\b) :type boolean :optional t :documentation "do-nothing compatibility option")
@@ -18,12 +18,8 @@
     (("help" #\h) :type boolean :optional t :documentation "display help")
     (("version" #\V) :type boolean :optional t :documentation "display version")))
 
-(defun main* ()
-  (apply 'main (command-line-arguments:get-command-line-arguments)))
-
-(defun main (&rest arguments)
-  (with-coded-exit ()
-    (interpret-command-line arguments)))
+(defun main ()
+  (interpret-command-line *command-line-arguments*))
 
 (defun interpret-command-line (args)
   (handle-command-line +tthsum-option-spec+ 'tthsum
