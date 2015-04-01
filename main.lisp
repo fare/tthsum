@@ -18,10 +18,7 @@
     (("help" #\h) :type boolean :optional t :documentation "display help")
     (("version" #\V) :type boolean :optional t :documentation "display version")))
 
-(defun main ()
-  (interpret-command-line *command-line-arguments*))
-
-(defun interpret-command-line (args)
+(defun main (args)
   (handle-command-line +tthsum-option-spec+ 'tthsum
                        :command-line args :name "tthsum" :rest-arity t))
 
