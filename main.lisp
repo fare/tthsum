@@ -3,12 +3,12 @@
 (in-package :cl-user)
 
 (defpackage :tthsum
-  (:use :ironclad :cl :command-line-arguments :binascii :asdf-driver)
+  (:use :ironclad :cl :command-line-arguments :binascii :uiop)
   (:shadowing-import-from :ironclad #:null))
 
 (in-package :tthsum)
 
-(defparameter *version* 1.1)
+(defparameter *version* "1.2")
 
 (defparameter +tthsum-option-spec+
   '(((#\b) :type boolean :optional t :documentation "do-nothing compatibility option")
@@ -23,7 +23,7 @@
                        :command-line args :name "tthsum" :rest-arity t))
 
 (defun show-version ()
-  (format t "tthsum, common-lisp version ~D~%" *version*))
+  (format t "tthsum, common-lisp version ~a~%" *version*))
 
 (defun show-help ()
   (show-version)
@@ -48,7 +48,14 @@
            (show-tth (digest-file :tree-hash file) file)
            (format *error-output* "file ~A does not exist~%" file))))
     (t
-     (show-tth (digest-stream :tree-hash
-                              #+(and sbcl unix) (sb-sys:make-fd-stream 0 :input t :element-type '(unsigned-byte 8))
-                              #+(and sbcl (not unix)) (error "Not supported")
-                              #-sbcl *standard-input*) "-"))))
+     (show-tth
+      #.(or #+(and sbcl unix)
+            '(digest-stream :tree-hash (sb-sys:make-fd-stream 0 :input t :element-type '(unsigned-byte 8)))
+            ;; UGLY HACK: most CL implementations get confused by the apparent symlink
+            ;; that is Linux's /dev/fd/0 aka /proc/self/fd/0, so instead we indirectly use it through cat...
+            #+os-unix
+            '(run-program '("cat") :input :interactive
+              :element-type '(unsigned-byte 8)
+              :output (lambda (stdin) (digest-stream :tree-hash stdin)))
+            '(error "reading from stdin not supported on your platform"))
+      "-"))))
